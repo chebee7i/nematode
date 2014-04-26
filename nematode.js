@@ -82,7 +82,7 @@ var nematode = {};
         context.positions = [{i:i, j:j}];;
          // There is no direction that led to the starting point.
         context.directions = [undefined]
-        $("#moves").html(context.positions.length-1);
+        $("#moves").append(': ' + (context.positions.length-1));
         context.change_nematode_type(nematode_type, i, j);
 
     }
@@ -436,7 +436,7 @@ var nematode = {};
             })
             .on("mouseover", function(p) {
                 // p is the actual object from the data matrix.
-                $(infoID).html("(" + p.cell.m + ", " + p.cell.n + ") hi");
+                $(infoID).html("(" + p.cell.m + ", " + p.cell.n + ")");
             })
             .on("mouseout", function(p) {
             })
@@ -444,7 +444,7 @@ var nematode = {};
                 if (typeof context.nematode_type != 'undefined') {
                     context.positions.push({i:p.cell.i, j:p.cell.j});
                     context.directions.push(p.direction);
-                    $("#moves").html(context.positions.length-1);
+                    $("#moves").html("Number of moves: " + (context.positions.length-1));
                     var squares = context.getNematodeSquares(context.nematode_type, p.cell.i, p.cell.j);
                     context.drawSquares(elementID, squares, 200, 200, 3, 3);
                 }
