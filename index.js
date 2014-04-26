@@ -1,6 +1,8 @@
 
 // Everything in here is run when the document loads.
 
+var data;
+
 $(function () {
 
     // Parameters
@@ -13,6 +15,7 @@ $(function () {
 
     // Element which holds the global view.
     var globalID = "#global";
+    var localID = "#local";
 
     // The desired size of the global view.
     var xPixels = 400;
@@ -33,6 +36,19 @@ $(function () {
     };
 
     // Now we create the landscape and draw it.
-    var landscape = nematode.createLandscape(nRows, nCols, xMin, xMax, yMin, yMax, func);
+    var landscape = nematode.createLandscape(func, nRows, nCols, xMin, xMax, yMin, yMax);
     nematode.drawLandscape(globalID, infoID, landscape, xPixels, yPixels);
+
+    var empty = $.extend({}, landscape.matrix[5][4]);
+    empty.nocolor = true;
+    var squares = [
+        {i:1, j:0, cell: empty, stroke: 1},
+        {i:1, j:1, cell: landscape.matrix[5][5], stroke: 1},
+        {i:0, j:1, cell: landscape.matrix[4][5], stroke: 1},
+        {i:1, j:2, cell: landscape.matrix[5][6], stroke: 1}];
+    nematode.drawSquares(localID, squares, 200, 200, 3, 3);
+
+    // Make data available at console
+    data = landscape;
+
 });

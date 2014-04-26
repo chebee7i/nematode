@@ -1,32 +1,78 @@
 /* Javascript for Nematode Scavenger Hunt
 
-Keep in mind that there are 4 (or 5) coordinate systems in play.
+Keep in mind that there are 5 coordinate systems in play.
 
-(a,b) in the landscape matrix are a "box" space. This is like a unitless
-pixel value. Importantly, SVG uses a coordinate system where a increases
-rightward, and b increases downward. The eventual pixel coordinates are the
-box coordinates scaled by the div width and height. This is like a viewport
-transformation in openGL. SVG calls these coordinates x and y. So this is
-technically 2 coordinate systems.
+1. Matrix coordinates: (i,j)
 
-There is (x,y) in real space. This is used to evaluate real functions
-when specifying the landscape. We want x to increase rightward and y to
-increase upward.
+    This mostly applies only for the grid. We have a box at position (i,j),
+    where i increases downward, and j increases rightward. A value of (3,5)
+    means we are looking at the box in row 5, column 5, with (0,0) in the
+    upper-left corner.
 
-There is (i,j) in matrix space. This is used to define a discretized version
-of the landscape. In this coordinate system, i increases downward, and j
-increases rightward.
+2. Abstract box coordinates: (a,b)
 
-Finally, there is (alpha, beta) in grid space. Here, we want to look
-similar to (x,y) in real space. So alpha increases rightward, beta upward.
-And further, we put the origin at the bottom, left. Only the display to
-users need to care about this space. The internal code only cares about
-(a,b), (x,y), and (i,j)
+    This is a abstract coordinate system similar to SVG's pixel coordinate
+    system. The idea is that we use the desire width and height of the DOM
+    element that will receive the plot, to scale these abstract coordinates
+    to actual pixel values (relative to the SVG element in the DOM element).
+    The coordinate a increases rightward and is similar to the x-axis, while
+    b increases downward and is similar to a negated y-axis. A value of (3,5)
+    means that this we are working with the box 3 units rightward and 5 units
+    downward, from the upper-left corner of the grid.
+
+3. Pixel coordinates (u,v)
+
+    From the abstract box coordinates, we scale them according to the desired
+    element width and height. The coordinate u increases rightward and is
+    similar to the x-axis, while b increases downward and is similar to a
+    negated y-axis. A value of (3,5) represents a position that is 3 pixels
+    rightward and 5 pixels downward from the upper-left corner of the grid.
+
+4. Real space (x,y)
+
+    The x and y coordinates are used by the function that we are discretizing.
+    So this is typical. The coordinate x increases rightward and y increases
+    upward.
+
+5. Grid space (m,n)
+
+    Finally, we have grid space. This is a user-facing space and the idea is
+    that we want to shield real space from the user and present a very simple
+    integer-based coordinate system. We *could* use matrix or box coordinates,
+    but neither of these is oriented in way that is familiar to most people.
+    So we want m to increase rightward and n to increase upward. This puts
+    (0,0) at the bottom left of the grid.
 
 */
 
 var nematode = {};
 (function(context) {
+
+    // This will be set by drawLandscape
+    context.matrix = undefined;
+
+    /* Returns the an object suitable for context.drawSquares
+     *
+     */
+    context.getNematodeSquares = {
+        /** Specify which elements of a 3x3 matrix are visible.
+         *
+         *   0 1 2
+         *   3 4 5
+         *   6 7 8
+         *
+         * where 0 = (0,0), 1 = (0,1), ..., 4 = (1,1), ..., 8 = (2,2)
+         */
+
+        // Type A: Can only see current square. No memory.
+        A: {i:1, j:1},
+
+        // Type B: Can see current square, and remembers previous square.
+        B: [{i:1, j:1}]
+        // Type C: Can see current square and square in forward direction.
+
+    };
+
 
     /* Create a Gaussian-like function of the following form:
      *
@@ -61,10 +107,10 @@ var nematode = {};
      *    var myfunc = function(x,y) {
      *        return z1(x,y) + z2(x,y);
      *    }
-     *    var lscape = context.createLandscape(10, 10, -3, 3, -3, 3, myfunc);
+     *    var lscape = context.createLandscape(myfunc, 10, 10, -3, 3, -3, 3);
      *
      */
-    context.createLandscape = function(nRows, nCols, xMin, xMax, yMin, yMax, func) {
+    context.createLandscape = function(func, nRows, nCols, xMin, xMax, yMin, yMax) {
         var arr = [];
 
         // i increases downward, but y increases upward, so we reverse.
@@ -72,8 +118,8 @@ var nematode = {};
         var rows = d3.range(nRows).reverse();
         var cols = d3.range(nCols);
         // We still need to shift the evaluation point by half the range band.
-        var xscale = d3.scale.ordinal().domain(cols).rangeBands([xMin, xMax]);
-        var yscale = d3.scale.ordinal().domain(rows).rangeBands([yMin, yMax]);
+        var j_to_x = d3.scale.ordinal().domain(cols).rangeBands([xMin, xMax]);
+        var i_to_y = d3.scale.ordinal().domain(rows).rangeBands([yMin, yMax]);
 
         var minz = Infinity;
         var maxz = -Infinity;
@@ -91,8 +137,8 @@ var nematode = {};
                 // We need to pass real space coordinate to func.
                 // We shift by half the rangeBand so we are in the center
                 // of the squares.
-                var x = xscale(j) + xscale.rangeBand() / 2;
-                var y = yscale(i) + yscale.rangeBand() / 2;
+                var x = j_to_x(j) + j_to_x.rangeBand() / 2;
+                var y = i_to_y(i) + i_to_y.rangeBand() / 2;
                 var z = func(x,y);
                 if (z < minz) {
                     minz = z;
@@ -100,8 +146,12 @@ var nematode = {};
                 if (z > maxz) {
                     maxz = z;
                 }
-                // In here, x and y are box coordinates.
-                arr[i][j] = {a: j, b: i, z: z, alpha: j, beta: nCols - i - 1};
+                arr[i][j] = {
+                    i: i, j: j,             // matrix
+                    a: j, b: i,             // abstract box
+                    x: x, y: y, z: z,       // real
+                    m: j, n: nCols - i - 1, // grid
+                };
             }
         }
         var lscape = {nRows: nRows, nCols: nCols,
@@ -121,6 +171,8 @@ var nematode = {};
          **/
         var attr = "z";
         var attr_domain = [landscape.min, landscape.max];
+
+        /** The goal here is to create mapping from z to colors **/
         var niceDomain = d3.scale.linear().domain(attr_domain).nice().domain();
         // This is a mapping from 11 categories to equally spaced regions in the domain.
         var linspace = d3.scale.linear().domain([0,11]).range(niceDomain);
@@ -128,6 +180,9 @@ var nematode = {};
         var polyDomain = d3.range(11).reverse().map(linspace);
         // This is map from the attr space to color space.
         var c = d3.scale.linear().domain(polyDomain).range(colorbrewer.RdBu[11]).clamp(true);
+
+        // Save it for later use.
+        context.colorScale = c;
 
         // The "matrix"
         var matrix = landscape.matrix;
@@ -150,14 +205,13 @@ var nematode = {};
             nCols = landscape.nCols;
 
         // This represents pixel space.
-        var x = d3.scale.ordinal().rangeBands([0, width]),
-            y = d3.scale.ordinal().rangeBands([0, height]);
-        // Map the rows/cols to pixel space y/x.
-        x.domain(d3.range(nCols));
-        y.domain(d3.range(nRows));
+        var j_to_u = d3.scale.ordinal().rangeBands([0, width]),
+            i_to_v = d3.scale.ordinal().rangeBands([0, height]);
+        // Map the i:j matrix coordinates to pixel coordinates v:u.
+        j_to_u.domain(d3.range(nCols));
+        i_to_v.domain(d3.range(nRows));
 
         // Now we add the elements
-
         svg.append("rect")
             .attr("class", "background")
             .attr("width", width)
@@ -168,7 +222,7 @@ var nematode = {};
             .data(matrix)
             .enter().append("g")
             .attr("class", "row")
-            .attr("transform", function(d, i) { return "translate(0," + y(i) + ")"; })
+            .attr("transform", function(d, i) { return "translate(0," + i_to_v(i) + ")"; })
             .each(rowHandler);
 
         // Add a line after each row.
@@ -180,7 +234,7 @@ var nematode = {};
             .data(d3.range(nCols))
             .enter().append("g")
             .attr("class", "column")
-            .attr("transform", function(d, i) { return "translate(" + x(i) + ")rotate(-90)"; });
+            .attr("transform", function(d, i) { return "translate(" + i_to_v(i) + ")rotate(-90)"; });
 
         // Add a line after each column.
         column.append("line")
@@ -191,27 +245,103 @@ var nematode = {};
             .data(row)
             .enter().append("rect")
             .attr("class", "cell")
-            // d.a is the number of columns over. We map this to pixels now.
-            .attr("x", function(d) { return x(d.a); })
-            .attr("width", x.rangeBand())
-            .attr("height", y.rangeBand())
+            .attr("x", function(d, j) { return j_to_u(j); })
+            .attr("width", j_to_u.rangeBand())
+            .attr("height", i_to_v.rangeBand())
             .style("fill-opacity", 1)
             .style("fill", function(d) { return c(d[attr]); })
-            .on("mouseover", mouseover)
-            .on("mouseout", mouseout)
+            .on("mouseover", function(p) {
+                // p is the actual object from the data matrix.
+                $(infoID).html("(" + p.m + ", " + p.n + ")");
+            })
+            .on("mouseout", function(p) {
+            })
             // No tool tip when hovering over a square.
-            .append("title").text(function (q,i) { return q[attr].toFixed(4); });
+            .append("title").text(function (q,i) { return q[attr].toFixed(3); });
         }
 
-        function mouseover(p) {
-            // p is the actual object from the data matrix.
 
-            $(infoID).html("(" + p.alpha + ", " + p.beta + ")");
+    /**
+        squares is a list of elements from the matrix of squares.
+        Each square contains enough information to place it properly
+        within a grid of shape (nRows, nCols).
+
+        fill can be left unspecified and we use the same colors as the landscape.
+        opacity is a number between 0 and 1, with 1 representing no transparency
+
+    **/
+    context.drawSquares = function(elementID, squares, width, height, nRows, nCols, fill, opacity) {
+
+        var attr = "z";
+
+        var colorFunc = function(d) {
+            // Set d.cell.nocolor = 1 to turn off coloring.
+            return typeof d.cell.nocolor !== 'undefined' ? 'none' : context.colorScale(d.cell[attr]);
         }
 
-        function mouseout() {
+        fill = typeof fill !== 'undefined' ? fill : colorFunc;
+        opacity = typeof opacity != 'undefined' ? opacity : 1;
+
+
+        // This represents pixel space.
+        var j_to_u = d3.scale.ordinal().rangeBands([0, width]),
+            i_to_v = d3.scale.ordinal().rangeBands([0, height]);
+        // Map the i:j matrix coordinates to pixel coordinates v:u.
+        j_to_u.domain(d3.range(nCols));
+        i_to_v.domain(d3.range(nRows));
+
+        // Margins around the landscape
+        var margin = {top: 10, right: 10, bottom: 10, left: 10};
+
+        // Remove everything from the element.
+        $(elementID).empty();
+
+        // Create the SVG element with the proper dimensions.
+        var svg = d3.select(elementID).append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .style("margin-left", -margin.left + "px")
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        /*svg.append("rect")
+            .attr("class", "background")
+            .attr("width", width)
+            .attr("height", height);
+        */
+
+        var g = svg.append("g");
+
+        g.selectAll("rect")
+            .data(squares)
+            .enter().append("rect")
+            .attr("class", "cell")
+            .attr("x", function(d) { return j_to_u(d.j); })
+            .attr("y", function(d) { return i_to_v(d.i); })
+            .attr("width", j_to_u.rangeBand())
+            .attr("height", i_to_v.rangeBand())
+            .style("fill-opacity", opacity)
+            .style("fill", fill)
+            .style("stroke", function(d) {
+                return typeof d.stroke !== 'undefined' ? "gray" : 'undefined';
+            })
+            .on("mouseover", function(p) {
+                // p is the actual object from the data matrix.
+                $(infoID).html("(" + p.cell.m + ", " + p.cell.n + ") hi");
+            })
+            .on("mouseout", function(p) {
+            })
+            .append("title").text(function (q,i) { return q.cell[attr].toFixed(3); });
         }
 
+    }
+
+    /* We need to wrap matrix coordinates so that we live on a torus. */
+    context.getCoordinate = function(i, j, nRows, nCols) {
+        var func = function(i,j) {
+            return {i: i % nRows, j: j % nCols};
+        }
+        return func;
     }
 
 })(nematode);
