@@ -371,6 +371,10 @@ var nematode = {};
             })
             .on("mouseout", function(p) {
             })
+            .on("click", function(p) {
+                var squares = context.getNematodeSquares(3, p.cell.i, p.cell.j);
+                context.drawSquares(elementID, squares, 200, 200, 3, 3);
+            })
             .append("title").text(function (q,i) { return q.cell[attr].toFixed(3); });
         }
 
@@ -388,7 +392,15 @@ var nematode = {};
        (i,j) will be remapped back onto the grid, if necessary.
     */
     context.getSquare = function(i,j) {
-        return context.landscape.matrix[i % context.landscape.nRows][j % context.landscape.nCols];
+        var ii = i % context.landscape.nRows;
+        if (ii < 0) {
+            ii = context.landscape.nRows + ii;
+        }
+        var jj = j % context.landscape.nCols;
+        if (jj < 0) {
+            jj = context.landscape.nCols + jj;
+        }
+        return context.landscape.matrix[ii][jj];
     }
 
 
