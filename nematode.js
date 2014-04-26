@@ -48,29 +48,61 @@ Keep in mind that there are 5 coordinate systems in play.
 var nematode = {};
 (function(context) {
 
-    // This will be set by drawLandscape
-    context.matrix = undefined;
+    // This will be set by createLandscape
+    context.landscape = undefined;
 
-    /* Returns the an object suitable for context.drawSquares
+    /* Returns the an object suitable for context.drawSquares.
+     *
+     * This is a 3x3 grid of squares, with some set to have no color.
+     * But for now, we only provide squares 1, 3, 4, 5, 7.
+     *
+     *    0 1 2
+     *    3 4 5
+     *    6 7 8
+     *
+     * We currently support 4 types of nemotodes.
      *
      */
-    context.getNematodeSquares = {
-        /** Specify which elements of a 3x3 matrix are visible.
-         *
-         *   0 1 2
-         *   3 4 5
-         *   6 7 8
-         *
-         * where 0 = (0,0), 1 = (0,1), ..., 4 = (1,1), ..., 8 = (2,2)
-         */
+    context.getNematodeSquares = function(type, i, j) {
+        // These are squares 1,3,4,5,7.
+        var squares = [
+            {i: 0, j:1, cell: context.getSquare(i-1, j+0), stroke: 1},
+            {i: 1, j:0, cell: context.getSquare(i+0, j-1), stroke: 1},
+            {i: 1, j:1, cell: context.getSquare(i+0, j+0), stroke: 1},
+            {i: 1, j:2, cell: context.getSquare(i+0, j+1), stroke: 1},
+            {i: 2, j:1, cell: context.getSquare(i+1, j+0), stroke: 1},
+        ];
 
-        // Type A: Can only see current square. No memory.
-        A: {i:1, j:1},
+        var idx;
+        var nocolors = []
 
-        // Type B: Can see current square, and remembers previous square.
-        B: [{i:1, j:1}]
-        // Type C: Can see current square and square in forward direction.
+        if (type == 0) {
+            // Type 0: Can only see current square. No memory.
+            nocolors = [0,1,3,4];
+        }
 
+        else if (type == 1) {
+            // Type 1: Can see current square, and remembers previous square.
+            nocolors = [0,1,3,4];
+        }
+
+        else if (type == 2) {
+            // Type 2: Can see current square and square in forward direction.
+            nocolors = [1,3,4];
+        }
+
+        else if (type == 3) {
+            // Type 3: Can see all nearest neighbor squares.
+            nocolors = [];
+        }
+
+        for (idx = 0; idx < nocolors.length; ++idx) {
+            // Make a copy (using jQuery) since we will modify it.
+            squares[nocolors[idx]].cell = $.extend({}, squares[nocolors[idx]].cell);
+            squares[nocolors[idx]].cell.nocolor = true;
+        }
+
+        return squares;
     };
 
 
@@ -157,6 +189,9 @@ var nematode = {};
         var lscape = {nRows: nRows, nCols: nCols,
                       min: minz, max: maxz,
                       matrix: arr};
+
+        context.landscape = lscape;
+
         return lscape;
     }
 
@@ -256,6 +291,10 @@ var nematode = {};
             })
             .on("mouseout", function(p) {
             })
+            .on("click", function(p) {
+                var squares = context.getNematodeSquares(3, p.i, p.j);
+                context.drawSquares("#local", squares, 200, 200, 3, 3);
+            })
             // No tool tip when hovering over a square.
             .append("title").text(function (q,i) { return q[attr].toFixed(3); });
         }
@@ -276,6 +315,7 @@ var nematode = {};
 
         var colorFunc = function(d) {
             // Set d.cell.nocolor = 1 to turn off coloring.
+            // Note, setting the fill to none seems to hide the tooltip from title. Bonus!
             return typeof d.cell.nocolor !== 'undefined' ? 'none' : context.colorScale(d.cell[attr]);
         }
 
@@ -337,11 +377,19 @@ var nematode = {};
     }
 
     /* We need to wrap matrix coordinates so that we live on a torus. */
-    context.getCoordinate = function(i, j, nRows, nCols) {
+    context.getCoordinateFunc = function(i, j, nRows, nCols) {
         var func = function(i,j) {
             return {i: i % nRows, j: j % nCols};
         }
         return func;
     }
+
+    /* Returns the square associated with matrix coordinate i,j.
+       (i,j) will be remapped back onto the grid, if necessary.
+    */
+    context.getSquare = function(i,j) {
+        return context.landscape.matrix[i % context.landscape.nRows][j % context.landscape.nCols];
+    }
+
 
 })(nematode);
