@@ -6,8 +6,8 @@ var data;
 $(function () {
 
     // Parameters
-    var nRows = 10;
-    var nCols = 10;
+    var nRows = 20;
+    var nCols = 20;
     var xMin = -3;
     var xMax = 3;
     var yMin = -3;

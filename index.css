@@ -1,3 +1,7 @@
+.cell {
+  cursor: pointer;
+}
+
 .background {
   fill: #eee;
 }
