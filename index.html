@@ -3,6 +3,10 @@
 <head>
     <meta charset="utf-8">
     <title>Nematode Activity</title>
+
+    <link href="normalize.css" rel="stylesheet" type="text/css">
+    <link href="easydropdown.css" rel="stylesheet" type="text/css">
+
     <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
     <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script type="text/javascript" src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
@@ -12,6 +16,7 @@
     <script type="text/javascript" src="colorbrewer.js"></script>
     <script type="text/javascript" src="nematode.js"></script>
     <script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript" src="jquery.easydropdown.min.js"></script>
 
     <style>
         @import url(index.css);
@@ -21,9 +26,21 @@
 <body>
 
 
-<div id="position"></div>
+<div id="position">Position</div>
 <div id="global"></div>
+
+<div id="nematode_container">
+<h3>Nematode Type</h3>
+<select id="nematode_type" class="dropdown">
+    <option value="0" selected>Zack</option>
+    <option value="1">Kelly</option>
+    <option value="2">Slater</option>
+    <option value="3">Lisa</option>
+</select>
+<div id="moves">Number of Moves</div>
 <div id="local"></div>
+</div>
+
 </body>
 
 </html>

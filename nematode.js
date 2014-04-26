@@ -51,6 +51,42 @@ var nematode = {};
     // This will be set by createLandscape
     context.landscape = undefined;
 
+    // Store {i:i, j:j}. Number of moves is length minus 1.
+    context.positions = [];
+
+    /** Store direction of movement:
+      L : left
+      R : right
+      F : forward
+      B : backward
+      S : stay
+    */
+    context.directions = [];
+
+    context.startup = function() {
+        // Called after building a landscape. Do other startup stuff.
+
+        var nematode_type = "#nematode_type";
+        $(nematode_type).change(function () {
+            var val = $(nematode_type).val();
+            context.change_nematode_type(val);
+        });
+    }
+
+    context.beginGame = function(nematode_type, i, j) {
+
+        // Get the starting point if none is provide.
+        i = typeof i !== 'undefined' ? i : Math.floor(Math.random() * context.landscape.nRows);
+        j = typeof j !== 'undefined' ? j : Math.floor(Math.random() * context.landscape.nCols);
+
+        context.positions = [{i:i, j:j}];;
+         // There is no direction that led to the starting point.
+        context.directions = [undefined]
+        $("#moves").html(context.positions.length-1);
+        context.change_nematode_type(nematode_type, i, j);
+
+    }
+
     /* Returns the an object suitable for context.drawSquares.
      *
      * This is a 3x3 grid of squares, with some set to have no color.
@@ -66,11 +102,11 @@ var nematode = {};
     context.getNematodeSquares = function(type, i, j) {
         // These are squares 1,3,4,5,7.
         var squares = [
-            {i: 0, j:1, cell: context.getSquare(i-1, j+0), stroke: 1},
-            {i: 1, j:0, cell: context.getSquare(i+0, j-1), stroke: 1},
-            {i: 1, j:1, cell: context.getSquare(i+0, j+0), stroke: 1},
-            {i: 1, j:2, cell: context.getSquare(i+0, j+1), stroke: 1},
-            {i: 2, j:1, cell: context.getSquare(i+1, j+0), stroke: 1},
+            {i: 0, j:1, direction: 'F', cell: context.getSquare(i-1, j+0), stroke: 1},
+            {i: 1, j:0, direction: 'L', cell: context.getSquare(i+0, j-1), stroke: 1},
+            {i: 1, j:1, direction: 'S', cell: context.getSquare(i+0, j+0), stroke: 1},
+            {i: 1, j:2, direction: 'R', cell: context.getSquare(i+0, j+1), stroke: 1},
+            {i: 2, j:1, direction: 'B', cell: context.getSquare(i+1, j+0), stroke: 1},
         ];
 
         var idx;
@@ -83,7 +119,32 @@ var nematode = {};
 
         else if (type == 1) {
             // Type 1: Can see current square, and remembers previous square.
-            nocolors = [0,1,3,4];
+            if (context.positions.length > 1) {
+                var prev = context.directions[context.positions.length - 1];
+                if (prev == 'F') {
+                    // Reveal 'B'
+                    nocolors = [0,1,3];
+                }
+                else if (prev == 'L') {
+                    // Reveal 'R'
+                    nocolors = [0,1,4];
+                }
+                else if (prev == 'S') {
+                    // Reveal no new things.
+                    nocolors = [0,1,3,4];
+                }
+                else if (prev == 'R') {
+                    // Reveal 'L'
+                    nocolors = [0,3,4];
+                }
+                else if (prev == 'B') {
+                    // Reveal 'F'
+                    nocolors = [1,3,4];
+                }
+            }
+            else {
+                nocolors = [0,1,3,4];
+            }
         }
 
         else if (type == 2) {
@@ -99,7 +160,7 @@ var nematode = {};
         for (idx = 0; idx < nocolors.length; ++idx) {
             // Make a copy (using jQuery) since we will modify it.
             squares[nocolors[idx]].cell = $.extend({}, squares[nocolors[idx]].cell);
-            squares[nocolors[idx]].cell.nocolor = true;
+            squares[nocolors[idx]].cell.notavailable = true;
         }
 
         return squares;
@@ -192,18 +253,23 @@ var nematode = {};
 
         context.landscape = lscape;
 
+        context.startup();
+
         return lscape;
     }
 
     // Draw the landscape in elementID giving it a particular width/height.
     // infoID is where you want the position of the cursor to be displayed.
-    context.drawLandscape = function(elementID, infoID, landscape, width, height) {
+    context.drawLandscape = function(elementID, localID, infoID, landscape, width, height) {
 
         /**
          The attribute from landscape that we use to color the squares.
 
          Here we also set up a colormap.
          **/
+
+        context.localID = localID
+
         var attr = "z";
         var attr_domain = [landscape.min, landscape.max];
 
@@ -292,8 +358,11 @@ var nematode = {};
             .on("mouseout", function(p) {
             })
             .on("click", function(p) {
-                var squares = context.getNematodeSquares(3, p.i, p.j);
-                context.drawSquares("#local", squares, 200, 200, 3, 3);
+                if (typeof context.nematode_type !== 'undefined') {
+                    // Teleportation does not count as a move. So we don't append to context.positions.
+                    var squares = context.getNematodeSquares(context.nematode_type, p.i, p.j);
+                    context.drawSquares(localID, squares, 200, 200, 3, 3);
+                }
             })
             // No tool tip when hovering over a square.
             .append("title").text(function (q,i) { return q[attr].toFixed(3); });
@@ -316,7 +385,7 @@ var nematode = {};
         var colorFunc = function(d) {
             // Set d.cell.nocolor = 1 to turn off coloring.
             // Note, setting the fill to none seems to hide the tooltip from title. Bonus!
-            return typeof d.cell.nocolor !== 'undefined' ? 'none' : context.colorScale(d.cell[attr]);
+            return typeof d.cell.notavailable !== 'undefined' ? 'white' : context.colorScale(d.cell[attr]);
         }
 
         fill = typeof fill !== 'undefined' ? fill : colorFunc;
@@ -372,18 +441,38 @@ var nematode = {};
             .on("mouseout", function(p) {
             })
             .on("click", function(p) {
-                var squares = context.getNematodeSquares(3, p.cell.i, p.cell.j);
-                context.drawSquares(elementID, squares, 200, 200, 3, 3);
+                if (typeof context.nematode_type != 'undefined') {
+                    context.positions.push({i:p.cell.i, j:p.cell.j});
+                    context.directions.push(p.direction);
+                    $("#moves").html(context.positions.length-1);
+                    var squares = context.getNematodeSquares(context.nematode_type, p.cell.i, p.cell.j);
+                    context.drawSquares(elementID, squares, 200, 200, 3, 3);
+                }
             })
-            .append("title").text(function (q,i) { return q.cell[attr].toFixed(3); });
+            .append("title").text(function (q) {
+                if (typeof q.cell.notavailable == 'undefined') {
+                    return q.cell[attr].toFixed(3);
+                }
+                else {
+                    return "";
+                }
+            });
         }
 
     }
 
     /* We need to wrap matrix coordinates so that we live on a torus. */
-    context.getCoordinateFunc = function(i, j, nRows, nCols) {
+    context.getCoordinateFunc = function(nRows, nCols) {
         var func = function(i,j) {
-            return {i: i % nRows, j: j % nCols};
+            var ii = i % nRows;
+            if (ii < 0) {
+                ii = nRows + ii;
+            }
+            var jj = j % nCols;
+            if (jj < 0) {
+                jj = nCols + jj;
+            }
+            return {i: ii, j: jj};
         }
         return func;
     }
@@ -401,6 +490,13 @@ var nematode = {};
             jj = context.landscape.nCols + jj;
         }
         return context.landscape.matrix[ii][jj];
+    }
+
+    context.change_nematode_type = function(nematode_type) {
+        var pos = context.positions[context.positions.length - 1];
+        var squares = context.getNematodeSquares(nematode_type, pos.i, pos.j);
+        context.drawSquares(context.localID, squares, 200, 200, 3, 3);
+        context.nematode_type = nematode_type;
     }
 
 

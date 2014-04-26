@@ -92,3 +92,15 @@ svg {
   font: 10px sans-serif;
 }
 
+/** The following adjust the look for easydropdown. **/
+ul {
+    padding: 0px;
+    margin: 0px;
+}
+select, .dropdown {
+    margin-bottom: 30px;
+    display: inline-block;
+}
+.dropdown {
+    width: 150px;
+}

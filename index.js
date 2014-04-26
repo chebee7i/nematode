@@ -1,8 +1,6 @@
 
 // Everything in here is run when the document loads.
 
-var data;
-
 $(function () {
 
     // Parameters
@@ -37,12 +35,9 @@ $(function () {
 
     // Now we create the landscape and draw it.
     var landscape = nematode.createLandscape(func, nRows, nCols, xMin, xMax, yMin, yMax);
-    nematode.drawLandscape(globalID, infoID, landscape, xPixels, yPixels);
 
-    var squares = nematode.getNematodeSquares(3, 2, 4);
-    nematode.drawSquares(localID, squares, 200, 200, 3, 3);
+    nematode.drawLandscape(globalID, localID, infoID, landscape, xPixels, yPixels);
 
-    // Make data available at console
-    data = landscape;
+    nematode.beginGame(0);
 
 });
