@@ -7,4 +7,4 @@ Pop it on a webpage, or run it locally via:
 
     python -m SimpleHTTPServer
 
-Then browse to http://localhost:8000
+Then browse to `http://localhost:8000`
