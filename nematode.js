@@ -75,16 +75,15 @@ var nematode = {};
 
     context.beginGame = function(nematode_type, i, j) {
 
-        // Get the starting point if none is provide.
+        // Get the starting point if none is provided.
         i = typeof i !== 'undefined' ? i : Math.floor(Math.random() * context.landscape.nRows);
         j = typeof j !== 'undefined' ? j : Math.floor(Math.random() * context.landscape.nCols);
 
         context.positions = [{i:i, j:j}];;
-         // There is no direction that led to the starting point.
+        // There is no direction that led to the starting point.
         context.directions = [undefined]
         $("#moves").append(': ' + (context.positions.length-1));
         context.change_nematode_type(nematode_type, i, j);
-
     }
 
     /* Returns the an object suitable for context.drawSquares.
@@ -148,8 +147,33 @@ var nematode = {};
         }
 
         else if (type == 2) {
-            // Type 2: Can see current square and square in forward direction.
-            nocolors = [1,3,4];
+            // Type 2: Can see current square and square in forward direction relative to previous move.
+            if (context.positions.length > 1) {
+                var prev = context.directions[context.positions.length - 1];
+                if (prev == 'F') {
+                    // Reveal 'F'
+                    nocolors = [1,3,4];
+                }
+                else if (prev == 'L') {
+                    // Reveal 'L'
+                    nocolors = [0,3,4];
+                }
+                else if (prev == 'S') {
+                    // Reveal no new things.
+                    nocolors = [0,1,3,4];
+                }
+                else if (prev == 'R') {
+                    // Reveal 'R'
+                    nocolors = [0,1,4];
+                }
+                else if (prev == 'B') {
+                    // Reveal 'B'
+                    nocolors = [0,1,3];
+                }
+            }
+            else {
+                nocolors = [0,1,3,4];
+            }
         }
 
         else if (type == 3) {
