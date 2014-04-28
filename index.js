@@ -11,16 +11,18 @@ $(function () {
     var yMin = -3;
     var yMax = 3;
 
-    // Element which holds the global view.
+    // Element which holds the global and local view.
     var globalID = "#global";
     var localID = "#local";
 
-    // The desired size of the global view.
-    var xPixels = 400;
-    var yPixels = 400;
+    // The desired size of the global and local views.
+    var xPixelsGlobal = 400;
+    var yPixelsGlobal = 400;
+    var xPixelsLocal = 400;
+    var yPixelsLocal = 400;
 
     // Element which holds the position of the cursor.
-    var infoID = "#position";
+    var positionID = "#position";
 
     // Here we create a landscape function.
     // It places a Gaussian of amplitude A at (x0, y0) using standard
@@ -34,21 +36,12 @@ $(function () {
     };
 
     // Now we create the landscape and draw it.
-
     var landscape = nematode.createLandscape(func, nRows, nCols, xMin, xMax, yMin, yMax);
 
-    /**
-    // temp:
-    nematode.landscape = landscape;
-    nematode.startup();
-    nematode.drawLandscape(globalID, localID, infoID, landscape, xPixels, yPixels);
+    var e = new nematode.Environment(landscape, globalID, xPixelsGlobal, yPixelsGlobal, positionID);
 
-    nematode.beginGame(0);
-    **/
-    var e = new nematode.Environment(landscape, "#global", 400, 400, "#position");
-
-    var o = new nematode.Nematode(e, "#local", 100, 100,2);
-    //var o2 = new nematode.Nematode(e, "#local3", 100, 100,3);
+    var defaultVariant = 0;
+    var o = new nematode.Nematode(e, localID, xPixelsLocal, yPixelsLocal, defaultVariant);
 
     bindVariant("#nematode_type", o);
     bindNumberOfMoves("#moves", o);
@@ -70,8 +63,4 @@ $(function () {
         $(elementID).html(nema.positions.length - 1);
     }
 
-    /* Make cell hovers update the current position */
-    function bindPosition(elementID) {
-
-    }
 });
