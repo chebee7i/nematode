@@ -1,18 +1,7 @@
-.cell {
-  cursor: pointer;
-}
-
-.background {
-  fill: #eee;
-}
-
-line {
-  stroke: #fff;
-}
-
 text.active {
   fill: red;
 }
+
 
 html {
   min-width: 1040px;

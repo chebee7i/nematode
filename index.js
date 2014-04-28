@@ -34,10 +34,44 @@ $(function () {
     };
 
     // Now we create the landscape and draw it.
+
     var landscape = nematode.createLandscape(func, nRows, nCols, xMin, xMax, yMin, yMax);
 
+    /**
+    // temp:
+    nematode.landscape = landscape;
+    nematode.startup();
     nematode.drawLandscape(globalID, localID, infoID, landscape, xPixels, yPixels);
 
     nematode.beginGame(0);
+    **/
+    var e = new nematode.Environment(landscape, "#global", 400, 400, "#position");
 
+    var o = new nematode.Nematode(e, "#local", 100, 100,2);
+    //var o2 = new nematode.Nematode(e, "#local3", 100, 100,3);
+
+    bindVariant("#nematode_type", o);
+    bindNumberOfMoves("#moves", o);
+
+    /* Binds the value of the selected variant to the nematode */
+    function bindVariant(elementID, nema) {
+        $(elementID).change(function () {
+            var val = $(nematode_type).val();
+            nema.setVariant(val);
+        });
+    }
+
+    /* Make nematode moves update the move counter. */
+    function bindNumberOfMoves(elementID, nema) {
+        var updateMove = function() {
+            $(elementID).html(this.positions.length-1);
+        }
+        nema.clickCallbacks.push(updateMove);
+        $(elementID).html(nema.positions.length - 1);
+    }
+
+    /* Make cell hovers update the current position */
+    function bindPosition(elementID) {
+
+    }
 });

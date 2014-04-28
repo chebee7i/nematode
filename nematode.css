@@ -1,0 +1,27 @@
+.cell {
+  cursor: pointer;
+}
+
+.background {
+  fill: #eee;
+}
+
+line {
+  stroke: #fff;
+}
+
+rect:hover {
+  fill-opacity: .9 !important;
+  stroke: black !important;
+  stroke-width: 1.5 !important;
+  /* Can't use z-index since SVG uses painter model. Must remove and append.
+     That's somewhat painful, so we'll settle for some edges of the rectangle
+     outline being behind the squares place to the right of and below it.
+     This doesn't look that great. We could also try adding a rectangle as the
+     final element of the svg and moving that element around as the mouse moves.
+  */
+}
+
+rect.ignorant {
+  fill: white !important;
+}
