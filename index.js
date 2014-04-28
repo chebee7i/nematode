@@ -50,6 +50,18 @@ $(function () {
     ///////////////////////////////////
 
 
+    /* Binds checkbox value to hide/show global container */
+    $("#global_container").css("visibility", "hidden");
+    $('#showLandscapeCB').change(function () {
+        var isChecked = $('#showLandscapeCB').prop("checked");
+        if (isChecked) {
+            $("#global_container").css("visibility", "visible");
+        }
+        else {
+            $("#global_container").css("visibility", "hidden");
+        }
+    });
+
     /* Binds the value of the selected variant to the nematode */
     function bindVariant(elementID, nema) {
         $(elementID).change(function () {

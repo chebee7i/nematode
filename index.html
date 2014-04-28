@@ -26,42 +26,58 @@
 
 <body>
 
-<span id="positionInfo">
-    Position: <span id="position">None</span>
-</span>
-<div id="global"></div>
+<div id="outer">
 
-<div id="nematode_container">
-<h3>Nematode Type</h3>
-<select id="nematode_type" class="dropdown">
-    <option value="0" selected>Zack</option>
-    <option value="1">Kelly</option>
-    <option value="2">Slater</option>
-    <option value="3">Lisa</option>
-</select>
+    <h3>Nematode Type</h3>
+    <select id="nematode_type" class="dropdown">
+        <option value="0" selected>Zack</option>
+        <option value="1">Kelly</option>
+        <option value="2">Slater</option>
+        <option value="3">Lisa</option>
+    </select>
 
-<div class="nematode_desc" id="zack">
-Zack doesn't have good vision or memory.
-He can only see his current square.
-</div>
-<div class="nematode_desc" id="kelly">
-Kelly doesn't have good vision, but at least she has memory.
-She can see her current square and her previous square.
-</div>
-<div class="nematode_desc" id="slater">
-Slater has good vision, but alas, no memory.
-He can see his current square and also the one directly in front of him.
-</div>
-<div class="nematode_desc" id="lisa">
-Lisa has superwoman vision. She can see every square near her.
+    <div class="nematode_desc" id="zack">
+    Zack doesn't have good vision or memory.
+    He can only see his current square.
+    </div>
+    <div class="nematode_desc" id="kelly">
+    Kelly doesn't have good vision, but at least she has memory.
+    She can see her current square and her previous square.
+    </div>
+    <div class="nematode_desc" id="slater">
+    Slater has good vision, but alas, no memory.
+    He can see his current square and also the one directly in front of him.
+    </div>
+    <div class="nematode_desc" id="lisa">
+    Lisa has superwoman vision. She can see every square near her.
+    </div>
+
+    <p>
+    Redder is better; bluer is a loser. Move your nematode to the most red square.
+    </p>
+
+<div id="local_container">
+    <div id="local"></div>
+    <span id="movesInfo">
+        Number of Moves: <span id="moves">Number of Moves</span>
+    </span>
+
 </div>
 
 
-<span id="movesInfo">
-    Number of Moves: <span id="moves">Number of Moves</span>
-</span>
-<div id="local"></div>
+<div id="global_container">
+    <div id="global"></div>
+    <span id="positionInfo">
+        Cursor Position: <span id="position">None</span>
+    </span>
 </div>
+
+<div id="showLandscape">
+    <input id="showLandscapeCB" type="checkbox">
+    <span id="showLandscapeTitle">Show Landscape</span>
+
+</div>
+
 
 </body>
 

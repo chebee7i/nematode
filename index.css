@@ -1,7 +1,3 @@
-text.active {
-  fill: red;
-}
-
 
 html {
   min-width: 1040px;
@@ -92,4 +88,26 @@ select, .dropdown {
 }
 .dropdown {
     width: 150px;
+}
+
+#outer {
+  margin: 10px;
+}
+
+#local_container {
+  width: 400px;
+  float: left;
+}
+
+#global_container {
+  margin-left:410px;
+}
+
+#showLandscape {
+  margin-top:30px;
+
+}
+
+#showLandscapeTitle {
+  margin-left: 5px;
 }
