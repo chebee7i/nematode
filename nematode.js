@@ -619,7 +619,13 @@ var nematode = {};
             .on("click.nematode", function(p) {
                 that.positions.push({i:p.cell.i, j:p.cell.j});
                 that.movements.push(p.movement);
+                // This is a bit of a hack. Because ignorant cells have
+                // "fill: white !important;" we cannot see the transition.
+                // So we have to turn off the ignorant class. No matter
+                // it will briefly show the true color (fine since they move
+                // there) and will be remade ignorant on the redraw.
                 d3.select(this)
+                    .classed("ignorant", false)
                     .transition().duration(50).style("fill", "black")
                     .each("end", function() {
                         // Since draw() empties the element, it doesn't

@@ -46,6 +46,10 @@ $(function () {
     bindVariant("#nematode_type", o);
     bindNumberOfMoves("#moves", o);
 
+
+    ///////////////////////////////////
+
+
     /* Binds the value of the selected variant to the nematode */
     function bindVariant(elementID, nema) {
         $(elementID).change(function () {
