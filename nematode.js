@@ -269,7 +269,7 @@ var nematode = {};
                 .style("fill-opacity", 1)
                 .style("fill", function(d) { return c(d[attr]); })
                 .on("mouseover.nematode", function(p) {
-                    $(that.positionID).html("(" + p.m + ", " + p.n + ")");
+                    that.setPositionText(p);
                 })
                 .append("title").text(function (d) {
                     return d[attr].toFixed(3);
@@ -290,10 +290,46 @@ var nematode = {};
         // Add a line after each column.
         column.append("line").attr("x1", -this.height);
 
+    }
+
+    Environment.prototype.setPositionText = function(d) {
+        $(this.positionID).html("(" + d.m + ", " + d.n + ")");
+    }
+
+    Environment.prototype.updatePositionMarker = function(nematode, d) {
+        var selector = "#currentPosition_" + nematode.elementID.substr(1);
+        var circle = d3.select(selector);
+        circle.attr("visibility", "visible");
+
+        // This represents pixel space.
+        // Map the i:j matrix coordinates to pixel coordinates v:u.
+        var j_to_u = d3.scale.ordinal().rangeBands([0, this.width]),
+            i_to_v = d3.scale.ordinal().rangeBands([0, this.height]);
+        j_to_u.domain(d3.range(this.landscape.nCols));
+        i_to_v.domain(d3.range(this.landscape.nRows));
+
+        var cx = j_to_u(d.j) + j_to_u.rangeBand() / 2;
+        var cy = i_to_v(d.i) + i_to_v.rangeBand() / 2;
+        circle.attr("cx", cx);
+        circle.attr("cy", cy);
 
     }
 
     Environment.prototype.bindNematode = function(nematode) {
+
+        // Add a circle to the svg element to represent the nematode position.
+        var j_to_u = d3.scale.ordinal().rangeBands([0, this.width]);
+        j_to_u.domain(d3.range(this.landscape.nCols));
+        var radius = j_to_u.rangeBand() / 4.0;
+        d3.select(this.elementID + " g")
+            .append("circle")
+            .attr("id", "currentPosition_" + nematode.elementID.substr(1))
+            .attr("visibility", "hidden")
+            .attr("r", radius)
+        ;
+        var pos = nematode.positions[nematode.positions.length - 1];
+        this.updatePositionMarker(nematode, this.getSquare(pos.i, pos.j));
+
         /*
            Make clicks on cells of the environment set a new position
            for the nematode. Note, all nemotodes with the same environment
@@ -302,6 +338,9 @@ var nematode = {};
         var colormap = this.colormap;
         var attr = this.landscape.attr;
         var eventns = "click." + nematode.elementID.substr(1);
+        var that = this;
+
+
         var rowHandler = function(row) {
             /* Note this is a function expression, so the function definition
              * is not hoisted (but the variable is). This allows us to declare
@@ -342,6 +381,10 @@ var nematode = {};
                         .each("end", function() {
                             d3.select(this).style("fill", colormap(d[attr]));
                         });
+
+                    // Update position marker on environment.
+                    that.updatePositionMarker(nematode, d);
+
                 });
 
         }
@@ -614,7 +657,7 @@ var nematode = {};
             .style("stroke", stroke)
             // namespace for the events
             .on("mouseover.nematode", function(p) {
-                $(that.environment.positionID).html("(" + p.cell.m + ", " + p.cell.n + ")");
+                that.environment.setPositionText(p.cell);
             })
             .on("click.nematode", function(p) {
                 that.positions.push({i:p.cell.i, j:p.cell.j});
@@ -628,6 +671,7 @@ var nematode = {};
                     .classed("ignorant", false)
                     .transition().duration(50).style("fill", "black")
                     .each("end", function() {
+                    //.each(function() {
                         // Since draw() empties the element, it doesn't
                         // matter that the cell is now black.
                         that.draw();
@@ -641,6 +685,7 @@ var nematode = {};
                     // Call the callback, passing the nematode as "this".
                     that.clickCallbacks[i].call(that);
                 }
+                that.environment.updatePositionMarker(that, p.cell);
             })
             .append("title").text(titleFunc);
 

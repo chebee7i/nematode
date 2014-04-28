@@ -25,3 +25,9 @@ rect:hover {
 rect.ignorant {
   fill: white !important;
 }
+
+#currentPosition_local {
+	stroke: white;
+	stroke-width: 1.5;
+	fill: black;
+}
