@@ -171,11 +171,11 @@ var nematode = {};
             /** The goal here is to create mapping from z to colors **/
             var niceDomain = d3.scale.linear().domain(attr_domain).nice().domain();
             // This is a mapping from 11 categories to equally spaced regions in the domain.
-            var linspace = d3.scale.linear().domain([0,11]).range(niceDomain);
-            // These are the 11 samples of the domain.
-            var polyDomain = d3.range(11).reverse().map(linspace);
+            var linspace = d3.scale.linear().domain([0,9]).range(niceDomain);
+            // These are the 9 samples of the domain.
+            var polyDomain = d3.range(9).map(linspace);
             // This is map from the attr space to color space.
-            var c = d3.scale.linear().domain(polyDomain).range(colorbrewer.RdBu[11]).clamp(true);
+            var c = d3.scale.linear().domain(polyDomain).range(colorbrewer.Blues[9]).clamp(true);
             return c;
         }
 
@@ -233,6 +233,10 @@ var nematode = {};
         j_to_u.domain(d3.range(nCols));
         i_to_v.domain(d3.range(nRows));
 
+        d3.select(this.elementID).on("mousedown", function(){
+            d3.event.preventDefault();
+        });
+
         // Remove everything from the element.
         $(this.elementID).empty();
 
@@ -268,7 +272,7 @@ var nematode = {};
                 .attr("height", i_to_v.rangeBand())
                 .style("fill-opacity", 1)
                 .style("fill", function(d) { return c(d[attr]); })
-                .on("mouseover.nematode", function(p) {
+                .on("mouseover", function(p) {
                     that.setPositionText(p);
                 })
                 .append("title").text(function (d) {
@@ -299,7 +303,7 @@ var nematode = {};
     Environment.prototype.updatePositionMarker = function(nematode, d) {
         var selector = "#currentPosition_" + nematode.elementID.substr(1);
         var circle = d3.select(selector);
-        circle.attr("visibility", "visible");
+        //circle.attr("visibility", "visible");
 
         // This represents pixel space.
         // Map the i:j matrix coordinates to pixel coordinates v:u.
@@ -324,7 +328,7 @@ var nematode = {};
         d3.select(this.elementID + " g")
             .append("circle")
             .attr("id", "currentPosition_" + nematode.elementID.substr(1))
-            .attr("visibility", "hidden")
+            //.attr("visibility", "hidden")
             .attr("r", radius)
         ;
         var pos = nematode.positions[nematode.positions.length - 1];
@@ -621,6 +625,10 @@ var nematode = {};
         // Margins around the landscape
         var margin = {top: 10, right: 10, bottom: 10, left: 10};
 
+        d3.select(this.elementID).on("mousedown", function(){
+            d3.event.preventDefault();
+        });
+
         // Remove everything from the element.
         $(this.elementID).empty();
 
@@ -656,10 +664,10 @@ var nematode = {};
             .style("fill", colorFunc)
             .style("stroke", stroke)
             // namespace for the events
-            .on("mouseover.nematode", function(p) {
+            .on("mouseover", function(p) {
                 that.environment.setPositionText(p.cell);
             })
-            .on("click.nematode", function(p) {
+            .on("click", function(p) {
                 that.positions.push({i:p.cell.i, j:p.cell.j});
                 that.movements.push(p.movement);
                 // This is a bit of a hack. Because ignorant cells have
@@ -688,7 +696,6 @@ var nematode = {};
                 that.environment.updatePositionMarker(that, p.cell);
             })
             .append("title").text(titleFunc);
-
     }
 
     // API

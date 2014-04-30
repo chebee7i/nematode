@@ -23,7 +23,8 @@ rect:hover {
 }
 
 rect.ignorant {
-  fill: white !important;
+  fill: yellow !important;
+  fill-opacity: .2 !important;
 }
 
 #currentPosition_local {
