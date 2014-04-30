@@ -688,7 +688,7 @@ var nematode = {};
             .append("image")
             .attr("x", image_x)
             .attr("y", image_y)
-            .attr("xlink:href", "nematode2.png")
+            .attr("xlink:href", "nematode.png")
             .attr("width", .8 * j_to_u.rangeBand() )
             .attr("height", .8 * i_to_v.rangeBand() );
 
