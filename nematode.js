@@ -292,7 +292,6 @@ var nematode = {};
             .attr("transform", function(d, j) { return "translate(" + j_to_u(j) + ", 0)"; });
 
         // Add a line after each column.
-        console.log(column);
         column.append("line").attr("y1", this.height);
 
     }
@@ -665,9 +664,6 @@ var nematode = {};
             .style("fill", colorFunc)
             .style("stroke", stroke)
 
-        var image_x = j_to_u(1) + .1 * j_to_u.rangeBand();
-        var image_y = i_to_v(1) + .1 * i_to_v.rangeBand();
-
         // Get the desired angle.
         var lastpos = that.movements[that.movements.length - 1];
         var angle = 0;
@@ -681,13 +677,29 @@ var nematode = {};
             else if (lastpos == "D") {
                 angle = 180;
             }
+            else if (lastpos == "S") {
+                // Grab the position from two times ago.
+                lastpos = that.movements[that.movements.length - 2];
+                if (typeof lastpos !== 'undefined') {
+                    if (lastpos == "L") {
+                        angle = -90;
+                    }
+                    else if (lastpos == "R") {
+                        angle = 90;
+                    }
+                    else if (lastpos == "D") {
+                        angle = 180;
+                    }
+                }
+            }
         }
 
         svg.append("g")
             .attr("transform", "rotate(" + angle + " " + (j_to_u(1) + j_to_u.rangeBand()/2) + " " + (i_to_v(1) + i_to_v.rangeBand()/2) + ")")
+            .attr("class", "avatar")
             .append("image")
-            .attr("x", image_x)
-            .attr("y", image_y)
+            .attr("x", j_to_u(1) + .1 * j_to_u.rangeBand())
+            .attr("y", i_to_v(1) + .1 * i_to_v.rangeBand())
             .attr("xlink:href", "nematode.png")
             .attr("width", .8 * j_to_u.rangeBand() )
             .attr("height", .8 * i_to_v.rangeBand() );
@@ -709,6 +721,10 @@ var nematode = {};
                 that.environment.setPositionText(p.cell);
             })
             .on("click", function(p) {
+                if (p.i == 1 && p.j == 1) {
+                    // Disable the ability to "stay" in place.
+                    return
+                }
                 that.positions.push({i:p.cell.i, j:p.cell.j});
                 that.movements.push(p.movement);
                 // This is a bit of a hack. Because ignorant cells have
@@ -718,7 +734,7 @@ var nematode = {};
                 // there) and will be remade ignorant on the redraw.
                 d3.select(this)
                     .classed("ignorant", false)
-                    .transition().duration(50)
+                    .transition().duration(25)
                     .style("fill-opacity", 1).style("fill", "black")
                     .each("end", function() {
                     //.each(function() {
@@ -738,8 +754,6 @@ var nematode = {};
                 that.environment.updatePositionMarker(that, p.cell);
             })
             .append("title").text(titleFunc);
-
-
 
     }
 
