@@ -289,10 +289,11 @@ var nematode = {};
             .data(d3.range(nCols))
             .enter().append("g")
             .attr("class", "column")
-            .attr("transform", function(d, i) { return "translate(" + i_to_v(i) + ")rotate(-90)"; });
+            .attr("transform", function(d, j) { return "translate(" + j_to_u(j) + ", 0)"; });
 
         // Add a line after each column.
-        column.append("line").attr("x1", -this.height);
+        console.log(column);
+        column.append("line").attr("y1", this.height);
 
     }
 
@@ -647,10 +648,10 @@ var nematode = {};
             .attr("height", this.height);
         */
 
-        var g = svg.append("g");
-
         // Keep a reference to the nematode instance.
         var that = this;
+
+        var g = svg.append("g");
 
         g.selectAll("rect")
             .data(squares)
@@ -663,7 +664,47 @@ var nematode = {};
             .style("fill-opacity", opacity)
             .style("fill", colorFunc)
             .style("stroke", stroke)
-            // namespace for the events
+
+        var image_x = j_to_u(1) + .1 * j_to_u.rangeBand();
+        var image_y = i_to_v(1) + .1 * i_to_v.rangeBand();
+
+        // Get the desired angle.
+        var lastpos = that.movements[that.movements.length - 1];
+        var angle = 0;
+        if (typeof lastpos !== 'undefined') {
+            if (lastpos == "L") {
+                angle = -90;
+            }
+            else if (lastpos == "R") {
+                angle = 90;
+            }
+            else if (lastpos == "D") {
+                angle = 180;
+            }
+        }
+
+        svg.append("g")
+            .attr("transform", "rotate(" + angle + " " + (j_to_u(1) + j_to_u.rangeBand()/2) + " " + (i_to_v(1) + i_to_v.rangeBand()/2) + ")")
+            .append("image")
+            .attr("x", image_x)
+            .attr("y", image_y)
+            .attr("xlink:href", "nematode2.png")
+            .attr("width", .8 * j_to_u.rangeBand() )
+            .attr("height", .8 * i_to_v.rangeBand() );
+
+        // Now do it again for the clicks.
+
+        var g = svg.append("g");
+
+        g.selectAll("rect")
+            .data(squares)
+            .enter().append("rect")
+            .attr("class", "clickable")
+            .attr("x", function(d) { return j_to_u(d.j); })
+            .attr("y", function(d) { return i_to_v(d.i); })
+            .attr("width", j_to_u.rangeBand())
+            .attr("height", i_to_v.rangeBand())
+            .style("fill-opacity", 0)
             .on("mouseover", function(p) {
                 that.environment.setPositionText(p.cell);
             })
@@ -677,7 +718,8 @@ var nematode = {};
                 // there) and will be remade ignorant on the redraw.
                 d3.select(this)
                     .classed("ignorant", false)
-                    .transition().duration(50).style("fill", "black")
+                    .transition().duration(50)
+                    .style("fill-opacity", 1).style("fill", "black")
                     .each("end", function() {
                     //.each(function() {
                         // Since draw() empties the element, it doesn't
@@ -696,6 +738,9 @@ var nematode = {};
                 that.environment.updatePositionMarker(that, p.cell);
             })
             .append("title").text(titleFunc);
+
+
+
     }
 
     // API
