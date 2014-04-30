@@ -5,7 +5,7 @@ $(function () {
 
     // Parameters
     var nRows = 20;
-    var nCols = 20;
+    var nCols = 30;
     var xMin = -3;
     var xMax = 3;
     var yMin = -3;
@@ -16,7 +16,7 @@ $(function () {
     var localID = "#local";
 
     // The desired size of the global and local views.
-    var xPixelsGlobal = 400;
+    var xPixelsGlobal = 600;
     var yPixelsGlobal = 400;
     var xPixelsLocal = 400;
     var yPixelsLocal = 400;
@@ -28,7 +28,7 @@ $(function () {
     // It places a Gaussian of amplitude A at (x0, y0) using standard
     // deviations sigmax and sigmay (so covariance matrix is a diagonal).
     // Use as: createGaussian(A, x0, y0, sigmax, sigmay)
-    var z1 = nematode.createGaussian(40, 0, 0, 1, 1);
+    var z1 = nematode.createGaussian(40, 0, 0, .6, .6);
     var z2 = nematode.createGaussian(-20, -1, -1, .5, .5);
     var z3 = nematode.createGaussian(-20, 1, 1, .5, .5);
     var z4 = nematode.createGaussian(30, 3,-3, 1, 1);
