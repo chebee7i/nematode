@@ -11,7 +11,7 @@ line {
 }
 
 rect:hover {
-  fill-opacity: .9 !important;
+  /*fill-opacity: .9 !important;*/
   stroke: black !important;
   stroke-width: 1.5 !important;
   /* Can't use z-index since SVG uses painter model. Must remove and append.
