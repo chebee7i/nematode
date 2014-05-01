@@ -615,6 +615,16 @@ var nematode = {};
             }
         }
 
+        var midpoint = this.environment.landscape.min + (this.environment.landscape.max - this.environment.landscape.min) / 2;
+        var fontColor = function(d) {
+            if (d.cell[attr] > midpoint) {
+                return "white";
+            }
+            else {
+                return "black";
+            }
+        }
+
         // This represents pixel space.
         var j_to_u = d3.scale.ordinal().rangeBands([0, this.width]),
             i_to_v = d3.scale.ordinal().rangeBands([0, this.height]);
@@ -652,9 +662,9 @@ var nematode = {};
 
         var g = svg.append("g");
 
-        g.selectAll("rect")
-            .data(squares)
-            .enter().append("rect")
+        var gg = g.selectAll("rect").data(squares).enter().append("g");
+
+        gg.append("rect")
             .attr("class", classFunc)
             .attr("x", function(d) { return j_to_u(d.j); })
             .attr("y", function(d) { return i_to_v(d.i); })
@@ -663,6 +673,16 @@ var nematode = {};
             .style("fill-opacity", opacity)
             .style("fill", colorFunc)
             .style("stroke", stroke)
+
+        // Show value
+        /*
+        gg.append("text")
+            .attr("x", function(d) { return j_to_u(d.j) + j_to_u.rangeBand() / 10; })
+            .attr("y", function(d) { return i_to_v(d.i) + i_to_v.rangeBand() / 10; })
+            .attr("fill", fontColor)
+            .text(titleFunc);
+        */
+
 
         // Get the desired angle.
         var lastpos = that.movements[that.movements.length - 1];
