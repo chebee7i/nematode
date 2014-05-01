@@ -4,8 +4,8 @@
 $(function () {
 
     // Parameters
-    var nRows = 20;
-    var nCols = 30;
+    var nRows = 40;
+    var nCols = 50;
     var xMin = -3;
     var xMax = 3;
     var yMin = -3;
