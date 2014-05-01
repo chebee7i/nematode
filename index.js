@@ -28,9 +28,9 @@ $(function () {
     // It places a Gaussian of amplitude A at (x0, y0) using standard
     // deviations sigmax and sigmay (so covariance matrix is a diagonal).
     // Use as: createGaussian(A, x0, y0, sigmax, sigmay)
-    var z1 = nematode.createGaussian(40, 0, 0, .6, .6);
-    var z2 = nematode.createGaussian(-20, -1, -1, .5, .5);
-    var z3 = nematode.createGaussian(-20, 1, 1, .5, .5);
+    var z1 = nematode.createGaussian(50, -.5, .5, .6, .6);
+    var z2 = nematode.createGaussian(-20, 0, -1, 1.2, .5);
+    var z3 = nematode.createGaussian(-20, 1, 1, .9, 1);
     var z4 = nematode.createGaussian(30, 3,-3, 1, 1);
     var z5 = nematode.createGaussian(30, 1, 2.5, .4, .2);
     var func = function(x,y) {

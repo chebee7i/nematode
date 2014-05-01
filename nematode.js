@@ -136,7 +136,7 @@ var nematode = {};
                     i: i, j: j,             // matrix
                     a: j, b: i,             // abstract box
                     x: x, y: y, z: z,       // real
-                    m: j, n: nCols - i - 1, // grid
+                    m: j, n: nRows - i - 1, // grid
                 };
             }
         }
