@@ -675,13 +675,25 @@ var nematode = {};
             .style("stroke", stroke)
 
         // Show value
-        /*
         gg.append("text")
-            .attr("x", function(d) { return j_to_u(d.j) + j_to_u.rangeBand() / 10; })
-            .attr("y", function(d) { return i_to_v(d.i) + i_to_v.rangeBand() / 10; })
+            .attr("x", function(d) {
+                if (d.i == 1 && d.j == 1) {
+                    return j_to_u(d.j) + j_to_u.rangeBand() / 10;
+                }
+                else {
+                    return "";
+                }
+            })
+            .attr("y", function(d) {
+                if (d.i == 1 && d.j == 1) {
+                        return i_to_v(d.i) + i_to_v.rangeBand() / 10;
+                    }
+                    else {
+                        return "";
+                    }
+            })
             .attr("fill", fontColor)
             .text(titleFunc);
-        */
 
 
         // Get the desired angle.
