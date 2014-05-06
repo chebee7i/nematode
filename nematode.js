@@ -608,14 +608,15 @@ var nematode = {};
         // Do not show value of landscape for ignorant positions.
         var titleFunc = function(d) {
             if (typeof d.cell.ignorant == 'undefined') {
-                return d.cell[attr].toFixed(3);
+                return d.cell[attr].toFixed(0);
             }
             else {
                 return "";
             }
         }
 
-        var midpoint = this.environment.landscape.min + (this.environment.landscape.max - this.environment.landscape.min) / 2;
+        // midpoint = 10 works well when using the 'Blues' colormap.
+        var midpoint = 10;
         var fontColor = function(d) {
             if (d.cell[attr] > midpoint) {
                 return "white";
@@ -676,23 +677,12 @@ var nematode = {};
 
         // Show value
         gg.append("text")
-            .attr("x", function(d) {
-                if (d.i == 1 && d.j == 1) {
-                    return j_to_u(d.j) + j_to_u.rangeBand() / 10;
-                }
-                else {
-                    return "";
-                }
-            })
-            .attr("y", function(d) {
-                if (d.i == 1 && d.j == 1) {
-                        return i_to_v(d.i) + i_to_v.rangeBand() / 10;
-                    }
-                    else {
-                        return "";
-                    }
-            })
+            .attr("x", function(d) { return j_to_u(d.j) + j_to_u.rangeBand() / 6;})
+            .attr("y", function(d) { return i_to_v(d.i) + i_to_v.rangeBand() / 6;})
             .attr("fill", fontColor)
+            .style("font-size","24px")
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "middle")
             .text(titleFunc);
 
 
