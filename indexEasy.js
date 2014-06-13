@@ -49,7 +49,7 @@ $(function () {
 
 
     /* Binds checkbox value to hide/show global container */
-    $("#global_container").css("visibility", "hidden");
+    $("#global_container").css("visibility", "visible");
     $('#showLandscapeCB').change(function () {
         var isChecked = $('#showLandscapeCB').prop("checked");
         if (isChecked) {
