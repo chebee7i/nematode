@@ -276,7 +276,7 @@ var nematode = {};
                     that.setPositionText(p);
                 })
                 .append("title").text(function (d) {
-                    return d[attr].toFixed(3);
+                    return d[attr].toFixed(0);
                 });
         }
         row.each(rowHandler);
@@ -615,8 +615,7 @@ var nematode = {};
             }
         }
 
-        // midpoint = 10 works well when using the 'Blues' colormap.
-        var midpoint = 10;
+        var midpoint = this.environment.landscape.min + (this.environment.landscape.max - this.environment.landscape.min) / 2;
         var fontColor = function(d) {
             if (d.cell[attr] > midpoint) {
                 return "white";
@@ -677,10 +676,11 @@ var nematode = {};
 
         // Show value
         gg.append("text")
-            .attr("x", function(d) { return j_to_u(d.j) + j_to_u.rangeBand() / 6;})
-            .attr("y", function(d) { return i_to_v(d.i) + i_to_v.rangeBand() / 6;})
+            // The "divide by 5" is an arbitrary portion of the width.
+            .attr("x", function(d) { return j_to_u(d.j) + j_to_u.rangeBand() / 5;})
+            .attr("y", function(d) { return i_to_v(d.i) + i_to_v.rangeBand() / 5;})
             .attr("fill", fontColor)
-            .style("font-size","24px")
+            .style("font-size","22px")
             .attr("text-anchor", "middle")
             .attr("dominant-baseline", "middle")
             .text(titleFunc);
