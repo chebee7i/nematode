@@ -92,9 +92,11 @@ $(function () {
             o.clickCallbacks[i].call(o);
         }
         // Send final energy to server...
-        $.post("/nematode/db.php", {nematode: o.variant,
-                                    moves: o.positions.length - 1,
-                                    score: o.energy});
+        var data = {nematode: o.variant,
+                    moves: o.positions.length - 1,
+                    score: o.energy};
+        console.log(data);
+        $.post("/nematode/db.php", data);
 
     }
 
