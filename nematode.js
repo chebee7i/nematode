@@ -686,9 +686,10 @@ var nematode = {};
             .text(titleFunc);
 
 
-        // Get the desired angle.
+        // Get the desired angle for the nematode avatar.
         var lastpos = that.movements[that.movements.length - 1];
         var angle = 0;
+        var idx = 2;
         if (typeof lastpos !== 'undefined') {
             if (lastpos == "L") {
                 angle = -90;
@@ -700,8 +701,11 @@ var nematode = {};
                 angle = 180;
             }
             else if (lastpos == "S") {
-                // Grab the position from two times ago.
-                lastpos = that.movements[that.movements.length - 2];
+                // Grab the last non-stay position.
+                while (lastpos == "S") {
+                    lastpos = that.movements[that.movements.length - idx];
+                    idx += 1;
+                }
                 if (typeof lastpos !== 'undefined') {
                     if (lastpos == "L") {
                         angle = -90;
@@ -730,6 +734,8 @@ var nematode = {};
 
         var g = svg.append("g");
 
+        var disableStay = false;
+
         g.selectAll("rect")
             .data(squares)
             .enter().append("rect")
@@ -743,7 +749,9 @@ var nematode = {};
                 that.environment.setPositionText(p.cell);
             })
             .on("click", function(p) {
-                if (p.i == 1 && p.j == 1) {
+
+                // Allow the ability to "stay" in place.
+                if (disableStay && p.i == 1 && p.j == 1) {
                     // Disable the ability to "stay" in place.
                     return
                 }
