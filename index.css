@@ -111,3 +111,8 @@ select, .dropdown {
 #showLandscapeTitle {
   margin-left: 5px;
 }
+
+th {
+  text-align: left;
+  padding-right: 10px;
+}

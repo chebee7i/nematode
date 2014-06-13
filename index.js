@@ -34,7 +34,8 @@ $(function () {
     var z4 = nematode.createGaussian(30, 3,-3, 1, 1);
     var z5 = nematode.createGaussian(30, 1, 2.5, .4, .2);
     var func = function(x,y) {
-        return z1(x,y) + z2(x,y) + z3(x,y) + z4(x,y) + z5(x,y);
+        // Shift it all so that it's positive.
+        return (z1(x,y) + z2(x,y) + z3(x,y) + z4(x,y) + z5(x,y) + 21);
     };
 
     // Now we create the landscape and draw it.
@@ -46,8 +47,9 @@ $(function () {
     var o = new nematode.Nematode(e, localID, xPixelsLocal, yPixelsLocal, defaultVariant);
 
     bindVariant("#nematode_type", o);
-    bindNumberOfMoves("#moves", o);
 
+    //bindNumberOfMoves("#moves", o);
+    bindMovesCountdown("#moves", "#energy", o, 75);
 
     ///////////////////////////////////
 
@@ -79,6 +81,37 @@ $(function () {
         }
         nema.clickCallbacks.push(updateMove);
         $(elementID).html(nema.positions.length - 1);
+    }
+
+    function gameOver() {
+        var msg = "Final Energy: "
+        msg += o.energy.toFixed(0) + "\n\nPress OK to begin again."
+        alert(msg);
+        o.giveLife();
+        o.draw();
+        // Call the nematode callbacks to update energy and moves.
+        for (var i = 0; i < o.clickCallbacks.length; i++) {
+            o.clickCallbacks[i].call(o);
+        }
+        // Send final energy to server...
+    }
+
+    function bindMovesCountdown(moveID, energyID, nema, maxMoves) {
+        // Moves = Number of Positions - 1
+        var updateMove = function() {
+            var val = maxMoves - this.positions.length + 1;
+            $(energyID).html(nema.energy.toFixed(0));
+            $(moveID).html(val);
+            if (val <= 0) {
+                // Mark the nematode as dead, so that no more moves can occur.
+                o.alive = false;
+                setTimeout(gameOver, 500);
+            }
+        }
+        nema.clickCallbacks.push(updateMove);
+        $(moveID).html(maxMoves - nema.positions.length + 1);
+        $(energyID).html(nema.energy.toFixed(0));
+
     }
 
 });

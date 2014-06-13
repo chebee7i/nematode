@@ -563,9 +563,10 @@ var nematode = {};
     };
 
     Nematode.prototype.giveLife = function(i, j) {
-        this.setPosition(i, j);
+        var cell = this.setPosition(i, j);
         this.alive = true;
         this.energy = typeof this.initialEnergy !== 'undefined' ? this.initialEnergy : 0;
+        this.environment.updatePositionMarker(this, cell);
     }
 
     Nematode.prototype.setPosition = function(i, j) {
@@ -579,6 +580,8 @@ var nematode = {};
         this.positions = [coords];
         // There is no movement that led to the starting point.
         this.movements = [undefined];
+
+        return this.environment.getSquare(i, j);
     }
 
     Nematode.prototype.setVariant = function(variant) {

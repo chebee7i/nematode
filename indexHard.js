@@ -46,8 +46,8 @@ $(function () {
     var o = new nematode.Nematode(e, localID, xPixelsLocal, yPixelsLocal, defaultVariant);
 
     bindVariant("#nematode_type", o);
-    bindNumberOfMoves("#moves", o);
-
+    //bindNumberOfMoves("#moves", o);
+    bindMovesCountdown("#moves", o, 75);
 
     ///////////////////////////////////
 
@@ -79,6 +79,37 @@ $(function () {
         }
         nema.clickCallbacks.push(updateMove);
         $(elementID).html(nema.positions.length - 1);
+    }
+
+    function gameOver() {
+        var msg = "Final Energy: "
+        msg += o.energy.toFixed(0) + "\n\nPress OK to begin again."
+        alert(msg);
+        o.giveLife();
+        o.draw();
+        // Call the nematode callbacks to update energy and moves.
+        for (var i = 0; i < o.clickCallbacks.length; i++) {
+            o.clickCallbacks[i].call(o);
+        }
+        // Send final energy to server...
+    }
+
+    function bindMovesCountdown(moveID, energyID, nema, maxMoves) {
+        // Moves = Number of Positions - 1
+        var updateMove = function() {
+            var val = maxMoves - this.positions.length + 1;
+            $(energyID).html(nema.energy.toFixed(0));
+            $(moveID).html(val);
+            if (val <= 0) {
+                // Mark the nematode as dead, so that no more moves can occur.
+                o.alive = false;
+                setTimeout(gameOver, 500);
+            }
+        }
+        nema.clickCallbacks.push(updateMove);
+        $(moveID).html(maxMoves - nema.positions.length + 1);
+        $(energyID).html(nema.energy.toFixed(0));
+
     }
 
 });
