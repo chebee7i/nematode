@@ -411,7 +411,7 @@ var nematode = {};
      * moving "forward", independent of movement label.
      *
      */
-    function Nematode(environment, elementID, width, height, variant, i, j) {
+    function Nematode(environment, elementID, width, height, variant, i, j, initialEnergy) {
 
         // Self-reference private variable for inner functions.
         var that = this;
@@ -424,12 +424,15 @@ var nematode = {};
         this.width = width;
         this.height = height;
         this.clickCallbacks = [];
+        this.initialEnergy = initialEnergy;
+        this.energy = typeof initialEnergy !== 'undefined' ? initialEnergy : 0;
+        this.alive = true;
 
         // Make sure we have a valid variant if one is not provided.
         variant = typeof variant !== 'undefined' ? variant : "0";
         this.variant = variant;
 
-        this.setPosition(i, j);
+        this.giveLife(i, j);
         this.draw();
 
         environment.bindNematode(this);
@@ -559,6 +562,11 @@ var nematode = {};
         return squares;
     };
 
+    Nematode.prototype.giveLife = function(i, j) {
+        this.setPosition(i, j);
+        this.alive = true;
+        this.energy = typeof this.initialEnergy !== 'undefined' ? this.initialEnergy : 0;
+    }
 
     Nematode.prototype.setPosition = function(i, j) {
         // Get the starting point if none is provided.
@@ -750,6 +758,11 @@ var nematode = {};
             })
             .on("click", function(p) {
 
+                if (!that.alive) {
+                    // Do nothing if we aren't alive.
+                    return
+                }
+
                 // Allow the ability to "stay" in place.
                 if (disableStay && p.i == 1 && p.j == 1) {
                     // Disable the ability to "stay" in place.
@@ -757,6 +770,7 @@ var nematode = {};
                 }
                 that.positions.push({i:p.cell.i, j:p.cell.j});
                 that.movements.push(p.movement);
+                that.energy += p.cell[attr];
                 // This is a bit of a hack. Because ignorant cells have
                 // "fill: white !important;" we cannot see the transition.
                 // So we have to turn off the ignorant class. No matter
