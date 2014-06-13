@@ -1,0 +1,7 @@
+RewriteEngine On
+RewriteRule ^$ easy [NC]
+RewriteRule ^easy$ indexEasy.html [NC,L]
+RewriteRule ^warmup$ indexEasy.html [NC,L]
+RewriteRule ^hard$ indexHard.html [NC,L]
+RewriteRule ^challenge$ indexHard.html [NC,L]
+RewriteRule ^solution$ index.html [NC,L]

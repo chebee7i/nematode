@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Nematode Activity</title>
+
+    <link href="normalize.css" rel="stylesheet" type="text/css">
+    <link href="easydropdown.css" rel="stylesheet" type="text/css">
+
+    <!-- Local Stuff -->
+    <link href="nematode.css" rel="stylesheet" type="text/css">
+    <link href="index.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.0/d3.min.js"></script>
+
+    <!-- Local Stuff -->
+    <script type="text/javascript" src="colorbrewer.js"></script>
+    <script type="text/javascript" src="nematode.js"></script>
+    <script type="text/javascript" src="indexEasy.js"></script>
+    <script type="text/javascript" src="jquery.easydropdown.min.js"></script>
+
+</head>
+
+<body>
+
+<div id="outer">
+
+    <h3>Nematode Type</h3>
+    <select id="nematode_type" class="dropdown">
+        <option value="0" selected>Zack</option>
+        <option value="1">Kelly</option>
+        <option value="2">Slater</option>
+        <option value="3">Lisa</option>
+    </select>
+
+    <div class="nematode_desc" id="zack">
+    Zack doesn't have good vision or memory.
+    He can only see his current square.
+    </div>
+    <div class="nematode_desc" id="kelly">
+    Kelly doesn't have good vision, but at least she has memory.
+    She can see her current square and her previous square.
+    </div>
+    <div class="nematode_desc" id="slater">
+    Slater has good vision, but alas, no memory.
+    He can see his current square and also the one directly in front of him.
+    </div>
+    <div class="nematode_desc" id="lisa">
+    Lisa has superwoman vision. She can see every square near her.
+    </div>
+
+<div id="local_container">
+    <div id="local"></div>
+    <span id="movesInfo">
+        Number of Moves: <span id="moves"></span>
+    </span>
+
+</div>
+
+
+<div id="global_container">
+    <div id="global"></div>
+    <span id="positionInfo">
+        Cursor Position: <span id="position"></span>
+    </span>
+</div>
+
+<div id="showLandscape">
+    <input id="showLandscapeCB" type="checkbox">
+    <span id="showLandscapeTitle">Show Landscape</span>
+
+</div>
+
+
+</body>
+
+</html>
