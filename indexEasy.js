@@ -82,6 +82,10 @@ $(function () {
         var msg = "Final Energy: "
         msg += o.energy.toFixed(0) + "\n\nPress OK to begin again."
         alert(msg);
+        var data = {nematode: o.variant,
+                    landscape: 'easy',
+                    moves: o.positions.length - 1,
+                    score: o.energy};
         o.giveLife();
         o.draw();
         // Call the nematode callbacks to update energy and moves.
@@ -89,10 +93,6 @@ $(function () {
             o.clickCallbacks[i].call(o);
         }
         // Send final energy to server...
-        var data = {nematode: o.variant,
-                    moves: o.positions.length - 1,
-                    score: o.energy};
-        console.log(data);
         $.post("/nematode/db.php", data);
     }
 
