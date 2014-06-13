@@ -29,7 +29,7 @@ $landscape = $_POST["landscape"];
 $moves = $_POST["moves"];
 $score = $_POST["score"];
 
-mysql_query("INSERT INTO scores (nematode, landscape, moves, score) VALUES ('$nematode', $landscape, $moves, $score)");
+mysql_query("INSERT INTO scores (nematode, landscape, moves, score) VALUES ('$nematode', '$landscape', $moves, $score)");
 
 mysql_close($link);
 
