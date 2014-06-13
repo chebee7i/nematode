@@ -92,6 +92,10 @@ $(function () {
             o.clickCallbacks[i].call(o);
         }
         // Send final energy to server...
+        $.post("/nematode/db.php", {nematode: o.variant,
+                                    moves: o.positions.length - 1,
+                                    score: o.energy});
+
     }
 
     function bindMovesCountdown(moveID, energyID, nema, maxMoves) {

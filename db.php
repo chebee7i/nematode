@@ -19,8 +19,14 @@ if (!$conn) {
 	die('Could not connect: ' . mysql_error());
 }
 
-$db = mysql_select($dbname);
-echo 'done';
+$db = mysql_select_db($dbname);
+
+$nematode = $_POST["nematode"];
+$moves = $_POST["moves"];
+$score = $_POST["score"];
+
+mysql_query("INSERT INTO scores (nematode, moves, score) VALUES ('$nematode', $moves, $score)");
+
 mysql_close($link);
 
 ?>
