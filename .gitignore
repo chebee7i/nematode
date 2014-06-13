@@ -1,0 +1,4 @@
+# Python related
+*.pyc
+*.pyo
+*.so
