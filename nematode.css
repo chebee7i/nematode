@@ -1,4 +1,6 @@
-.cell {
+
+
+rect.clickable, .cell {
   cursor: pointer;
 }
 
