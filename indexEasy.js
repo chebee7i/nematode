@@ -28,9 +28,9 @@ $(function () {
     // It places a Gaussian of amplitude A at (x0, y0) using standard
     // deviations sigmax and sigmay (so covariance matrix is a diagonal).
     // Use as: createGaussian(A, x0, y0, sigmax, sigmay)
-    var z1 = nematode.createGaussian(40, 0, 0, .5, .5);
+    var z1 = nematode.createGaussian(100, 0, 0, 1, 1);
     var func = function(x,y) {
-        return z1(x,y);
+        return 10 * z1(x,y);
     };
 
     // Now we create the landscape and draw it.
