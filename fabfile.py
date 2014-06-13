@@ -2,9 +2,11 @@ from __future__ import print_function
 
 from fabric.api import local, run, cd, env
 
-def hello():
-    print("Hello world!")
+env.forward_agent = 'True'
 
-def show():
+def deploy():
+    local('git push')
     with cd('webapps/basic/nematode'):
-        run('ls')
+        run('git pull')
+        run('chmod go+rx *.js *.css *.html *.png')
+        run('chmod o+r .htaccess')
