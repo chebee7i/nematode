@@ -566,6 +566,11 @@ var nematode = {};
         var cell = this.setPosition(i, j);
         this.alive = true;
         this.environment.updatePositionMarker(this, cell);
+        this.draw();
+        // Call the nematode callbacks to update energy and moves.
+        for (var i = 0; i < this.clickCallbacks.length; i++) {
+            this.clickCallbacks[i].call(this);
+        }
     }
 
     Nematode.prototype.setPosition = function(i, j) {

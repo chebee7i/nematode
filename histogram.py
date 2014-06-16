@@ -51,7 +51,7 @@ ax.set_title('Scores by Environment')
 ax.set_xticks(ind+width)
 ax.set_xticklabels( ('Zack', 'Kelly', 'Slater', 'Lisa') )
 ax.set_xlabel('Nematode')
-ax.legend( (rects_easy[0], rects_hard[0]), ('Easy', 'Hard'), loc='best' )
+ax.legend( (rects_easy[0], rects_hard[0]), ('Easy', 'Hard'), loc=2)
 
 def autolabel(rects):
     # attach some text labels
