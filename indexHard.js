@@ -34,7 +34,8 @@ $(function () {
     var z4 = nematode.createGaussian(30, 3,-3, 1, 1);
     var z5 = nematode.createGaussian(30, 1, 2.5, .4, .2);
     var func = function(x,y) {
-        return z1(x,y) + z2(x,y) + z3(x,y) + z4(x,y) + z5(x,y);
+        // Shift it all so that it's positive.
+        return (z1(x,y) + z2(x,y) + z3(x,y) + z4(x,y) + z5(x,y) + 21);
     };
 
     // Now we create the landscape and draw it.
@@ -46,6 +47,7 @@ $(function () {
     var o = new nematode.Nematode(e, localID, xPixelsLocal, yPixelsLocal, defaultVariant);
 
     bindVariant("#nematode_type", o);
+
     //bindNumberOfMoves("#moves", o);
     bindMovesCountdown("#moves", "#energy", o, 50);
 
