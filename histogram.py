@@ -20,7 +20,7 @@ db = MySQLdb.connect(host=dbhost,
 
 c = db.cursor()
 
-pairs = [('easy', 20), ('hard', 75)]
+pairs = [('easy', 20), ('hard', 50)]
 means = defaultdict(list)
 stds = defaultdict(list)
 for pair in pairs:
