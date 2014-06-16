@@ -72,7 +72,6 @@ $(function () {
             var val = $(nematode_type).val();
             nema.setVariant(val);
             nema.giveLife();
-
         });
     }
 

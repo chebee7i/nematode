@@ -66,6 +66,7 @@ $(function () {
         $(elementID).change(function () {
             var val = $(nematode_type).val();
             nema.setVariant(val);
+            nema.giveLife();
         });
     }
 
@@ -86,14 +87,9 @@ $(function () {
                     landscape: 'easy',
                     moves: o.positions.length - 1,
                     score: o.energy};
-        o.giveLife();
-        o.draw();
-        // Call the nematode callbacks to update energy and moves.
-        for (var i = 0; i < o.clickCallbacks.length; i++) {
-            o.clickCallbacks[i].call(o);
-        }
         // Send final energy to server...
         $.post("/nematode/db.php", data);
+        o.giveLife();
     }
 
     function bindMovesCountdown(moveID, energyID, nema, maxMoves) {
