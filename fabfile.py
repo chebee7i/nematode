@@ -8,4 +8,4 @@ def deploy():
     local('git push')
     with cd('webapps/basic/nematode'):
         run('git pull')
-        run('chmod 644 *.js *.css *.html *.png .htaccess')
+        run('chmod 644 *.js *.css *.html *.png *.pdf .htaccess')

@@ -47,7 +47,7 @@ $(function () {
 
     bindVariant("#nematode_type", o);
     //bindNumberOfMoves("#moves", o);
-    bindMovesCountdown("#moves", "#energy", o, 75);
+    bindMovesCountdown("#moves", "#energy", o, 50);
 
     ///////////////////////////////////
 
