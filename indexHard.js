@@ -16,10 +16,10 @@ $(function () {
     var localID = "#local";
 
     // The desired size of the global and local views.
-    var xPixelsGlobal = 600;
-    var yPixelsGlobal = 400;
-    var xPixelsLocal = 400;
-    var yPixelsLocal = 400;
+    var xPixelsGlobal = 500;
+    var yPixelsGlobal = 300;
+    var xPixelsLocal = 300;
+    var yPixelsLocal = 300;
 
     // Element which holds the position of the cursor.
     var positionID = "#position";
