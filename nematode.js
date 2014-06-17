@@ -481,6 +481,7 @@ var nematode = {};
 
         var idx;
         var prev;
+        var randChoice;
         var ignorant = [];
 
         // The indexes now are indexes into the "squares" variable.
@@ -579,10 +580,19 @@ var nematode = {};
             ignorant = [];
         }
 
+        if (ignorant.length) {
+            randChoice = Math.floor(Math.random() * ignorant.length);
+            randChoice = ignorant[randChoice];
+        }
+
         for (idx = 0; idx < ignorant.length; ++idx) {
             // Make a copy (using jQuery) since we will modify it.
             squares[ignorant[idx]].cell = $.extend({}, squares[ignorant[idx]].cell);
             squares[ignorant[idx]].cell.ignorant = true;
+        }
+        if (typeof randChoice !== 'undefined') {
+            console.log("randChoice is " + randChoice);
+            squares[randChoice].cell.randChoice = true;
         }
 
         return squares;
@@ -659,6 +669,16 @@ var nematode = {};
             }
         }
 
+        var randChoiceFunc = function(d) {
+            if (typeof d.cell.randChoice == 'undefined') {
+                return "";
+            }
+            else {
+                // This is the randomly selected cell.
+                return "*";
+            }
+        }
+
         var midpoint = this.environment.landscape.min + (this.environment.landscape.max - this.environment.landscape.min) / 2;
         var fontColor = function(d) {
             if (d.cell[attr] > midpoint) {
@@ -729,6 +749,14 @@ var nematode = {};
             .attr("dominant-baseline", "middle")
             .text(titleFunc);
 
+        gg.append("text")
+            .attr("x", function(d) { return j_to_u(d.j) + j_to_u.rangeBand() / 2;})
+            .attr("y", function(d) { return i_to_v(d.i) + i_to_v.rangeBand() / 2;})
+            .attr("fill", "black")
+            .style("font-size","22px")
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "middle")
+            .text(randChoiceFunc);
 
         // Get the desired angle for the nematode avatar.
         var lastpos = that.movements[that.movements.length - 1];
