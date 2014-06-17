@@ -480,7 +480,10 @@ var nematode = {};
         ];
 
         var idx;
+        var prev;
         var ignorant = [];
+
+        // The indexes now are indexes into the "squares" variable.
 
         var variant = this.variant;
         if (variant == 0) {
@@ -491,7 +494,7 @@ var nematode = {};
         else if (variant == 1) {
             // Variant 1: Can see current square, and remembers previous square.
             if (this.positions.length > 1) {
-                var prev = this.movements[this.positions.length - 1];
+                prev = this.movements[this.positions.length - 1];
                 if (prev == 'U') {
                     // Reveal 'D'
                     ignorant = [0,1,3];
@@ -521,7 +524,7 @@ var nematode = {};
         else if (variant == 2) {
             // Variant 2: Can see current square and square in forward direction relative to previous move.
             if (this.positions.length > 1) {
-                var prev = this.movements[this.positions.length - 1];
+                prev = this.movements[this.positions.length - 1];
                 if (prev == 'U') {
                     // Reveal 'U'
                     ignorant = [1,3,4];
@@ -531,8 +534,30 @@ var nematode = {};
                     ignorant = [0,3,4];
                 }
                 else if (prev == 'S') {
-                    // Reveal only the current position.
-                    ignorant = [0,1,3,4];
+                    // Then we need to find the last direction it moved.
+                    idx = 2;
+                    while (prev == "S") {
+                        prev = this.movements[this.movements.length - idx];
+                        idx += 1;
+                    }
+                    if (typeof prev !== 'undefined') {
+                        if (prev == "L") {
+                            ignorant = [0,3,4];
+                        }
+                        else if (prev == "R") {
+                            ignorant = [0,1,4];
+                        }
+                        else if (prev == "D") {
+                            ignorant = [0,1,3];
+                        }
+                        else { // prev == "U"
+                            ignorant = [1,3,4];
+                        }
+                    }
+                    else {
+                        // Default direction is up...reveal U.
+                        ignorant = [1,3,4];
+                    }
                 }
                 else if (prev == 'R') {
                     // Reveal 'R'
@@ -544,7 +569,8 @@ var nematode = {};
                 }
             }
             else {
-                ignorant = [0,1,3,4];
+                // Default direction is up...reveal U.
+                ignorant = [1,3,4];
             }
         }
 
