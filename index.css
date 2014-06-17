@@ -124,6 +124,7 @@ ul.nematode_desc {
   font-size: 1em;
   margin: 0px 0px 20px 10px;
   padding: 0px 0px 0px 10px;
+  width: 300px;
 }
 
 ul.nematode_desc li {
@@ -132,4 +133,15 @@ ul.nematode_desc li {
 
 .name {
   color: #0099FF;
+}
+
+#links {
+  position: fixed;
+  top: 1em;
+  right: 1em;
+}
+
+#links li {
+  display: inline;;
+  padding-left: 20px;
 }
