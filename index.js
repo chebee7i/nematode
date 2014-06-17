@@ -44,6 +44,7 @@ $(function () {
     var e = new nematode.Environment(landscape, globalID, xPixelsGlobal, yPixelsGlobal, positionID);
 
     var defaultVariant = 0;
+    $('#nematode_type').val(defaultVariant);
     var o = new nematode.Nematode(e, localID, xPixelsLocal, yPixelsLocal, defaultVariant);
 
     bindVariant("#nematode_type", o);
