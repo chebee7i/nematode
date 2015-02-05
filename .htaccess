@@ -1,4 +1,5 @@
 RewriteEngine On
+RewriteBase /nematode
 RewriteRule ^$ easy [NC]
 RewriteRule ^easy$ indexEasy.html [NC,L]
 RewriteRule ^warmup$ indexEasy.html [NC,L]
